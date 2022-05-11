@@ -1,0 +1,11 @@
+/*Esri CSS Modules*/
+@import '../node_modules/@arcgis/core/assets/esri/themes/dark/main.css';
+/* Or use the style CDN  */
+/* @import 'https://js.arcgis.com/4.23/@arcgis/core/assets/esri/themes/light/main.css'; */
+
+/*****App Style*****/
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
