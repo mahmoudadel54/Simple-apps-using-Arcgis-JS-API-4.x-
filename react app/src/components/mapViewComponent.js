@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Map from '@arcgis/core/Map'
 import MapView from '@arcgis/core/views/MapView';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer'
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer'
 import { BookmarksWidget, BasemapGalleryWidget } from './widgets/index';
 
 function MapViewComponent(props) {
@@ -55,7 +56,17 @@ function MapViewComponent(props) {
         ],
 
       })
-
+      let featLayer= new FeatureLayer({
+        // URL to the service
+        url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0"
+      });
+      map.add(featLayer)
+      view.on('click',(e)=>{
+        view.hitTest(e).then(res=>
+          {
+            console.log(res);   //works only with graphics (in case of featurelayer or graphical layer)
+          })
+      })
       //using loadAll method to make sure that all layers in map service are loaded successfully
       layer2.loadAll()
         .catch(function (error) {
