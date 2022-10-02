@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Map from '@arcgis/core/Map'
 import MapView from '@arcgis/core/views/MapView';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer'
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer'
+import query from '@arcgis/core/rest/query';
+import Query from '@arcgis/core/rest/support/Query';
 import { BookmarksWidget, BasemapGalleryWidget } from './widgets/index';
 
 function MapViewComponent(props) {
@@ -55,7 +58,40 @@ function MapViewComponent(props) {
         ],
 
       })
-
+      // using query task in v. 4.x  (it is ok for featureLayers and map services)   
+      let urlCities = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0'
+      // there are 2 ways to excute query on a layer published via arcgis server 
+      //1 - using Query with params 
+      let queryToExcute = new Query({
+          outFields: ["pop2000, areaname, capital"],
+          where: "pop2000 >100000",
+          returnGeometry: true
+      });
+      query.executeQueryJSON(urlCities, queryToExcute).then(res => {
+          console.log(res);
+      })
+      //2- using autocast object params
+      query.executeQueryJSON(urlCities, {
+          //I was using queryToExcute but now one can use autocast object with 
+          // queery params
+          outFields: ["pop2000, areaname, capital"],
+          where: "pop2000 >100000",
+          returnGeometry: true
+      }).then(res => {
+          console.log(res);
+      })
+      // using query but for feature layers only (its performance is better than queryTask ) it is view.hitTest
+      let featLayer= new FeatureLayer({
+        // URL to the service
+        url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0"
+      });
+      map.add(featLayer)
+      view.on('click',(e)=>{
+        view.hitTest(e).then(res=>
+          {
+            console.log(res);   //works only with graphics (in case of featurelayer or graphical layer)
+          })
+      })
       //using loadAll method to make sure that all layers in map service are loaded successfully
       layer2.loadAll()
         .catch(function (error) {
